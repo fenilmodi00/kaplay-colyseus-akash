@@ -1,12 +1,17 @@
 import { Room, Client } from "@colyseus/core";
 import { MyRoomState, Player } from "./schema/MyRoomState";
+import { GAME_WIDTH, GAME_HEIGHT } from "../../../globals";
 
 // list of avatars
 const avatars = ['dino', 'bean', 'bag', 'btfly', 'bobo', 'ghostiny', 'ghosty', 'mark'];
 
 export class MyRoom extends Room {
-  maxClients = 4;
+  maxClients = 2;
   state = new MyRoomState();
+
+  teamPlayersCount(team: "left" | "right" = "left") {
+    return [...this.state.players.values()].filter(p => p.team == team).length
+  }
 
   onCreate (options: any) {
     this.onMessage("move", (client, message) => {
@@ -26,8 +31,9 @@ export class MyRoom extends Room {
     console.log(client.sessionId, "joined!");
 
     const player = new Player();
-    player.x = Math.floor(Math.random() * 400);
-    player.y = Math.floor(Math.random() * 400);
+    player.team = this.teamPlayersCount() % 2 ? "right" : "left"
+    player.x = player.team == "left" ? GAME_WIDTH / 4 : GAME_WIDTH - (GAME_WIDTH / 4);
+    player.y = GAME_HEIGHT / 2;
     player.sessionId = client.sessionId;
     // get a random avatar for the player
     player.avatar = avatars[Math.floor(Math.random() * avatars.length)];

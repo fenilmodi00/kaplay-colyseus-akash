@@ -1,4 +1,5 @@
 import { k } from "../App";
+import type { GameObj, Vec2 } from "kaplay";
 
 import { getStateCallbacks, Room } from "colyseus.js";
 import type { MyRoomState, Player } from "../../../server/src/rooms/schema/MyRoomState";
@@ -6,6 +7,8 @@ import type { MyRoomState, Player } from "../../../server/src/rooms/schema/MyRoo
 export function createLobbyScene() {
   k.scene("lobby", (room: Room<MyRoomState>) => {
     const $ = getStateCallbacks(room);
+    let localPlayer: GameObj | null = null
+    let localPlayerPos: Vec2 | null = null
 
     // keep track of player sprites
     const spritesBySessionId: Record<string, any> = {};
@@ -13,6 +16,7 @@ export function createLobbyScene() {
     // listen when a player is added on server state
     $(room.state).players.onAdd((player, sessionId) => {
       spritesBySessionId[sessionId] = createPlayer(player);
+      if (room.sessionId == sessionId) localPlayer = spritesBySessionId[sessionId]
     });
 
     // listen when a player is removed from server state
@@ -21,9 +25,25 @@ export function createLobbyScene() {
     });
 
     k.onClick(() => {
-      room.send("move", k.mousePos());
-    });
+      k.setCursorLocked(true);
+    })
 
+    k.onMouseMove((_, delta) => {
+      if (!k.isCursorLocked() || !localPlayer) return;
+
+      const { x, y } = localPlayerPos ?? localPlayer.pos;
+      const offset = {
+        x: localPlayer.width / 2,
+        y: localPlayer.height / 2
+      };
+      const clampedX = localPlayer.is("team-left")
+        ? k.clamp(offset.x, x + delta.x, k.width() / 2 - offset.x)
+        : k.clamp(k.width() / 2 + offset.x, x + delta.x, k.width() - offset.x);
+
+      localPlayerPos = k.vec2(clampedX, k.clamp(offset.y, y + delta.y, k.height() - offset.y));
+
+      room.send("move", localPlayerPos);
+    });
   });
 }
 
@@ -35,7 +55,7 @@ function createPlayer(player: Player) {
     k.sprite(player.avatar),
     k.pos(player.x, player.y),
     k.anchor("center"),
-    k.scale(0.5)
+    `team-${player.team}`,
   ]);
 
   sprite.onUpdate(() => {

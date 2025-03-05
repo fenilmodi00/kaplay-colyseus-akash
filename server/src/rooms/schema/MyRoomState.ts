@@ -5,6 +5,7 @@ export class Player extends Schema {
 	@type('string') public userId: string;
 	@type('string') public avatar: string;
 	@type('string') public name: string;
+	@type("string") public team: "left" | "right" = "left";
 	@type("number") public x: number = 0;
 	@type("number") public y: number = 0;
 }
