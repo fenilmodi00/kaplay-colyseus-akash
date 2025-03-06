@@ -12,4 +12,7 @@ export class Player extends Schema {
 
 export class MyRoomState extends Schema {
   @type({ map: Player }) players = new MapSchema<Player>();
+	@type('number') public puckX: number;
+	@type('number') public puckY: number;
+	@type('string') public lastHitBy: string;
 }

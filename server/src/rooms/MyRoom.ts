@@ -20,6 +20,12 @@ export class MyRoom extends Room {
       player.y = message.y;
     });
 
+    this.onMessage("puck", (client, message) => {
+      if (message?.hit) this.state.lastHitBy = client.sessionId;
+      this.state.puckX = message.x;
+      this.state.puckY = message.y;
+    });
+
     this.onMessage("type", (client, message) => {
       //
       // handle "type" message
