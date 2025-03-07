@@ -59,11 +59,12 @@ async function createPlayer(player: Player, isLocal: boolean) {
 
   // Add player sprite
   const sprite = k.add([
-    k.sprite(player.avatar),
+    k.sprite(player.avatar, { flipX: player.team == "right" }),
     k.pos(player.x, player.y),
     k.anchor("center"),
     k.area({ shape: new k.Circle(k.vec2(0), (spriteData?.width ?? 32) * 0.4) }),
-    k.body(),
+    k.body({ isStatic: true }),
+    k.z(player.y),
     `team-${player.team}`,
     "player",
     {
@@ -71,11 +72,11 @@ async function createPlayer(player: Player, isLocal: boolean) {
     },
   ]);
 
-  if (isLocal) sprite.tag("localPlayer")
+  if (isLocal) sprite.tag("localPlayer");
 
   sprite.onUpdate(() => {
     sprite.pos.x = k.lerp(sprite.pos.x, player.x, 12 * k.dt());
-    sprite.pos.y = k.lerp(sprite.pos.y, player.y, 12 * k.dt());
+    sprite.pos.y = sprite.z = k.lerp(sprite.pos.y, player.y, 12 * k.dt());
   });
 
   return sprite;
