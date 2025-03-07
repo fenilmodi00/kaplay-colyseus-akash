@@ -6,13 +6,14 @@ import type { Collision, DrawRectOpt, GameObj } from "kaplay"
 const size = 48
 
 export default (room: Room<MyRoomState>) => ([
-  k.pos(k.vec2(k.width() - 100, k.height()).scale(0.5)),
+  k.pos(k.vec2(k.width(), k.height()).scale(0.5)),
   k.anchor("center"),
   k.area({
     shape: new k.Circle(k.vec2(0), size / 2),
     restitution: 0.2,
   }),
   k.body(),
+  k.z((k.height() - size) / 2),
   {
     add(this: GameObj) {
       const localPlayerId = room.sessionId
@@ -25,7 +26,7 @@ export default (room: Room<MyRoomState>) => ([
 
       this.onCollide("boundary", () => {
         k.shake(2);
-      })
+      });
 
       this.onUpdate(() => {
         if (localPlayerId == (room.state?.lastHitBy ?? localPlayerId)) {
@@ -34,6 +35,8 @@ export default (room: Room<MyRoomState>) => ([
           this.pos.x = k.lerp(this.pos.x, room.state.puckX, 12 * k.dt());
           this.pos.y = k.lerp(this.pos.y, room.state.puckY, 12 * k.dt());
         }
+
+        this.z = this.pos.y;
       })
     },
 
@@ -49,7 +52,7 @@ export default (room: Room<MyRoomState>) => ([
           color: k.Color.fromHex("1f102a")
         },
         radius: [8, 8, size, size],
-      }
+      };
 
       k.drawRect({ ...side, pos: side.pos?.scale(2), opacity: 0.2 });
       k.drawRect(side);
@@ -63,7 +66,7 @@ export default (room: Room<MyRoomState>) => ([
           width: 4,
           color: k.Color.fromHex("1f102a")
         },
-      })
+      });
     }
   },
 ])
