@@ -9,8 +9,6 @@ import playground from "../objs/playground";
 export function createLobbyScene() {
   k.scene("lobby", (room: Room<MyRoomState>) => {
     const $ = getStateCallbacks(room);
-    let localPlayer: GameObj | null = null;
-    let localPlayerPos: Vec2 | null = null;
 
     // keep track of player sprites
     const spritesBySessionId: Record<string, any> = {};
@@ -19,7 +17,7 @@ export function createLobbyScene() {
     $(room.state).players.onAdd(async (player, sessionId) => {
       const isLocal = room.sessionId == sessionId;
       spritesBySessionId[sessionId] = await createPlayer(player, isLocal);
-      if (isLocal) localPlayer = spritesBySessionId[sessionId];
+      if (isLocal) onLocalPlayerCreated(room, spritesBySessionId[sessionId], player);
     });
 
     // listen when a player is removed from server state
@@ -31,25 +29,56 @@ export function createLobbyScene() {
       k.setCursorLocked(true);
     })
 
-    k.onMouseMove((_, delta) => {
-      if (!k.isCursorLocked() || !localPlayer) return;
-
-      const { x, y } = localPlayerPos ?? localPlayer.pos;
-      const offset = {
-        x: localPlayer.width / 2,
-        y: localPlayer.height / 2
-      };
-      const clampedX = localPlayer.is("team-left")
-        ? k.clamp(offset.x, x + delta.x, k.width() / 2 - offset.x)
-        : k.clamp(k.width() / 2 + offset.x, x + delta.x, k.width() - offset.x);
-
-      localPlayerPos = k.vec2(clampedX, k.clamp(offset.y, y + delta.y, k.height() - offset.y));
-
-      room.send("move", localPlayerPos);
-    });
-
     k.add(playground())
     k.add(puck(room))
+  })
+}
+
+function onLocalPlayerCreated(room: Room<MyRoomState>, playerObj: GameObj, playerState: Player) {
+  let playerObjPos = playerObj.pos.clone()
+
+  const offset = {
+    x: playerObj.width / 2,
+    y: playerObj.height / 2
+  };
+
+  const minMaxX = {
+    "left": {
+      min: offset.x,
+      max: k.width() / 2 - offset.x,
+    },
+    "right": {
+      min: k.width() / 2 + offset.x,
+      max: k.width() - offset.x,
+    }
+  }[playerState.team];
+
+  const minMaxY = {
+    min: offset.y,
+    max: k.height() - offset.y,
+  };
+
+  const isMoveOvershot = (axis: "x" | "y", delta: Vec2, minMax: object) => {
+    const minMaxVals = Object.values(minMax);
+
+    return minMaxVals.includes(playerObjPos[axis]) &&
+      !minMaxVals.includes(playerObj.pos[axis]) &&
+      Math.abs(delta[axis]) > Math.abs(delta[axis == 'y' ? 'x' : 'y']);
+  }
+
+  k.onMouseMove((_, delta) => {
+    if (!k.isCursorLocked() || !playerObj) return;
+
+    const { x, y } = playerObjPos;
+    const newX = isMoveOvershot('y', delta, minMaxY) ? x : x + delta.x;
+    const newY = isMoveOvershot('x', delta, minMaxX) ? y : y + delta.y;
+
+    playerObjPos = k.vec2(
+      k.clamp(minMaxX.min, newX, minMaxX.max),
+      k.clamp(minMaxY.min, newY, minMaxY.max)
+    );
+
+    room.send("move", playerObjPos);
   });
 }
 
@@ -75,10 +104,10 @@ async function createPlayer(player: Player, isLocal: boolean) {
         ]);
       }
     },
-    `team-${player.team}`,
     "player",
     {
-      sessionId: player.sessionId
+      sessionId: player.sessionId,
+      team: player.team,
     },
   ]);
 
