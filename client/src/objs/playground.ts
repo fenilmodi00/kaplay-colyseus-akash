@@ -67,13 +67,23 @@ export default () => ([
               color: k.Color.fromHex("d6e5ff"),
             }
           });
+
+          [
+            [-480, 20],[-430, 60],
+            [130, 60], [180, 20],
+          ].forEach(([x, w]) => k.drawLine({
+            p1: k.vec2(x + 400, -field.height),
+            p2: k.vec2(x, field.height),
+            width: w,
+            opacity: 0.2,
+          }));
         }, () => {
           k.drawRect({
             anchor: "center",
             width: field.width - 10,
             height: field.height - 10,
             radius: +(field?.radius ?? 100) - 10,
-          })
+          });
         })
       })
     }

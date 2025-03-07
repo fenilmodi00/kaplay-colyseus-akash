@@ -65,6 +65,16 @@ async function createPlayer(player: Player, isLocal: boolean) {
     k.area({ shape: new k.Circle(k.vec2(0), (spriteData?.width ?? 32) * 0.4) }),
     k.body({ isStatic: true }),
     k.z(player.y),
+    {
+      add(this: GameObj) {
+        this.add([
+          k.anchor("center"),
+          k.sprite(player.avatar, { flipX: this.flipX, flipY: true }),
+          k.pos(0, spriteData?.height ?? 32),
+          k.opacity(0.2),
+        ]);
+      }
+    },
     `team-${player.team}`,
     "player",
     {
