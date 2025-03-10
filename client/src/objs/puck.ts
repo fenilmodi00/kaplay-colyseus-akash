@@ -1,22 +1,25 @@
 import { k } from "../App"
 import { Room } from "colyseus.js";
 import type { MyRoomState } from "../../../server/src/rooms/schema/MyRoomState";
-import type { Collision, DrawRectOpt, GameObj } from "kaplay"
+import type { Collision, DrawRectOpt, Game, GameObj } from "kaplay"
 
-const size = 48
+const size = 48;
+const startPos = () => (k.vec2(k.width(), k.height()).scale(0.5).sub(0, 6));
 
 export default (room: Room<MyRoomState>) => ([
-  k.pos(k.vec2(k.width(), k.height()).scale(0.5)),
+  k.pos(startPos()),
   k.anchor("center"),
   k.area({
     shape: new k.Circle(k.vec2(0), size / 2),
     restitution: 0.2,
   }),
   k.body(),
+  k.scale(),
   k.z((k.height() - size) / 2),
+  "puck",
   {
     add(this: GameObj) {
-      const localPlayerId = room.sessionId
+      const localPlayerId = room.sessionId;
 
       this.onCollide("localPlayer", (_: GameObj, col: Collision) => {
         room.send("puck", { ...this.pos, hit: true });
@@ -26,6 +29,30 @@ export default (room: Room<MyRoomState>) => ([
 
       this.onCollide("boundary", () => {
         k.shake(2);
+      });
+
+      this.onCollide("net", async (net: GameObj) => {
+        if (room.state.lastHitBy != localPlayerId) return
+
+        room.send("goal", net.team);
+        room.send("puck", startPos());
+      });
+
+      room.onMessage("goal", async () => {
+        this.vel = k.vec2(0);
+        this.area.collisionIgnore = [...(this.area?.collisionIgnore ?? []), "player"];
+
+        k.shake(10);
+        k.flash(k.getBackground() ?? k.WHITE, 0.25);
+        k.burp();
+
+        await k.tween(this.scale, k.vec2(0), 0.25, v => this.scale = v, k.easings.easeOutQuad);
+        this.pos = startPos();
+
+        k.wait(1, () => {
+          if (this.area?.collisionIgnore) this.area.collisionIgnore.splice(this.area.collisionIgnore.indexOf("player"), 1);
+          k.tween(this.scale, k.vec2(1), 0.25, v => this.scale = v, k.easings.easeOutQuad);
+        })
       });
 
       this.onUpdate(() => {
@@ -64,7 +91,7 @@ export default (room: Room<MyRoomState>) => ([
         color: k.Color.fromHex("7b5480"),
         outline: {
           width: 4,
-          color: k.Color.fromHex("1f102a")
+          color: k.Color.fromHex("1f102a"),
         },
       });
     }

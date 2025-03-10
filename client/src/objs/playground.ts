@@ -32,6 +32,20 @@ export default () => ([
         k.opacity(0.4),
       ]);
 
+      const nets = [-1, 1].map(side => field.add([
+        k.anchor("center"),
+        k.pos(field.width / 2 * side, 0),
+        k.rect(8, 200, { radius: side == -1 ? [0, 2, 2, 0] : [2, 0, 0, 2] }),
+        k.color(k.Color.fromHex("834dc4")),
+        k.outline(4, k.Color.fromHex("1f102a")),
+        k.area({ collisionIgnore: ["player"] }),
+        k.z(9999),
+        "net",
+        {
+          team: side == -1 ? "left" : "right",
+        }
+      ]));
+
       field.onDraw(() => {
         k.drawMasked(() => {
           k.drawCircle({
@@ -68,9 +82,23 @@ export default () => ([
             }
           });
 
+          nets.forEach(net => {
+            k.drawCircle({
+              anchor: "center",
+              pos: net.pos,
+              radius: net.height / 2,
+              color: k.Color.fromHex("adb2f0"),
+              outline: {
+                width: 4,
+                color: k.Color.fromHex("c9ddff"),
+              }
+            })
+          });
+
+          // reflections
           [
-            [-480, 20],[-430, 60],
-            [130, 60], [180, 20],
+            [-450, 20], [-400, 60],
+            [0, 60], [50, 20],
           ].forEach(([x, w]) => k.drawLine({
             p1: k.vec2(x + 400, -field.height),
             p2: k.vec2(x, field.height),

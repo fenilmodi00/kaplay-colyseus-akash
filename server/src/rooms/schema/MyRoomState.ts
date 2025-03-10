@@ -15,4 +15,6 @@ export class MyRoomState extends Schema {
 	@type('number') public puckX: number;
 	@type('number') public puckY: number;
 	@type('string') public lastHitBy: string;
+	@type('number') public leftScore: number = 0;
+	@type('number') public rightScore: number = 0;
 }

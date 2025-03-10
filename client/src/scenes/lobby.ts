@@ -4,11 +4,13 @@ import type { MyRoomState, Player } from "../../../server/src/rooms/schema/MyRoo
 import puck from "../objs/puck";
 import playground from "../objs/playground";
 import player from "../objs/player";
+import score from "../objs/score";
 
 export function createLobbyScene() {
   k.scene("lobby", (room: Room<MyRoomState>) => {
     k.add(playground());
     k.add(puck(room));
+    k.add(score(room));
 
     const $ = getStateCallbacks(room);
 

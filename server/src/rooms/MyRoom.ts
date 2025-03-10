@@ -26,6 +26,16 @@ export class MyRoom extends Room {
       this.state.puckY = message.y;
     });
 
+    this.onMessage("goal", (client, teamNet) => {
+      const team = teamNet == "left" ? "right" : "left";
+      this.state[`${team}Score`] += 1;
+      const pad = Math.max(this.state.leftScore, this.state.rightScore).toString().length;
+
+      this.broadcast("goal",
+        `${String(this.state.leftScore).padStart(pad, "0")}:${String(this.state.rightScore).padStart(pad, "0")}`
+      );
+    });
+
     this.onMessage("type", (client, message) => {
       //
       // handle "type" message

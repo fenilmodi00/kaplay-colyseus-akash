@@ -15,11 +15,13 @@ export default (room: Room<MyRoomState>, player: Player) => ([
   {
     sessionId: player.sessionId,
     team: player.team,
+    startPos: k.vec2(player.x, player.y),
     moveLerp: 12,
     overshootLerp: 30,
+    controllable: true,
 
     add(this: GameObj) {
-      k.tween(this.scale, k.vec2(1), 0.25, v => this.scale = v, k.easings.easeOutBack)
+      k.tween(this.scale, k.vec2(1), 0.25, v => this.scale = v, k.easings.easeOutBack);
 
       // reflection
       this.add([
@@ -70,12 +72,20 @@ export default (room: Room<MyRoomState>, player: Player) => ([
 function onLocalPlayerCreated(room: Room<MyRoomState>, playerObj: GameObj) {
   playerObj.tag("localPlayer");
 
-  let mousePos = playerObj.pos.clone();
-  const [moveMinX, moveMaxX] = playerObj.moveMinMax.x
-  const [moveMinY, moveMaxY] = playerObj.moveMinMax.y
+  let mousePos = playerObj.startPos;
+  const [moveMinX, moveMaxX] = playerObj.moveMinMax.x;
+  const [moveMinY, moveMaxY] = playerObj.moveMinMax.y;
+
+  room.onMessage("goal", () => {
+    mousePos = playerObj.startPos;
+    playerObj.controllable = false
+    room.send("move", mousePos);
+
+    k.wait(1, () => playerObj.controllable = true)
+  })
 
   k.onMouseMove((_, delta) => {
-    if (!k.isCursorLocked()) return;
+    if (!k.isCursorLocked() || !playerObj.controllable) return;
 
     const { x, y } = mousePos;
     const newX = isMoveOvershot('y', x, delta, playerObj) ? x : x + delta.x;
