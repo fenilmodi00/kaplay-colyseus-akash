@@ -29,12 +29,17 @@ export default (room: Room<MyRoomState>) => ([
         this.applyImpulse(col.normal.scale(col.distance).scale(100));
       });
 
+      this.onCollide("player", () => k.play("hit"));
+
       this.onCollide("boundary", () => {
         k.shake(2);
+        k.play("hit");
       });
 
       this.onCollide("net", async (net: GameObj) => {
         if (room.state.lastHitBy != localPlayerId) return;
+
+        k.addKaboom(k.vec2(k.clamp(100, this.pos.x, k.width() - 100), this.pos.y), { scale: 0.8 });
 
         room.send("goal", net.team);
         room.send("puck", startPos());

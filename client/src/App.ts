@@ -19,6 +19,7 @@ createLobbyScene();
 
 async function main() {
   await k.loadBitmapFont("happy-o", "assets/happy-o.png", 31, 39);
+  k.loadSound("hit", "sounds/hit.mp3");
 
   const text = k.add([
     k.text("Joining room ...", { size: 28 }),
