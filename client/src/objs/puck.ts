@@ -1,7 +1,7 @@
 import { k } from "../App"
 import { Room } from "colyseus.js";
 import type { MyRoomState } from "../../../server/src/rooms/schema/MyRoomState";
-import type { Collision, DrawRectOpt, Game, GameObj } from "kaplay"
+import type { Collision, DrawRectOpt, GameObj } from "kaplay"
 
 const size = 48;
 const startPos = () => (k.vec2(k.width(), k.height()).scale(0.5).sub(0, 6));
@@ -14,12 +14,14 @@ export default (room: Room<MyRoomState>) => ([
     restitution: 0.2,
   }),
   k.body(),
-  k.scale(),
+  k.scale(0),
   k.z((k.height() - size) / 2),
   "puck",
   {
     add(this: GameObj) {
       const localPlayerId = room.sessionId;
+
+      k.tween(this.scale, k.vec2(1), 0.25, v => this.scale = v, k.easings.easeOutBack);
 
       this.onCollide("localPlayer", (_: GameObj, col: Collision) => {
         room.send("puck", { ...this.pos, hit: true });
