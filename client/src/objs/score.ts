@@ -28,7 +28,7 @@ export default (room: Room<MyRoomState>) => ([
     add(this: GameObj) {
       this.textWidth = this.width
 
-      room.onMessage("goal", (score) => {
+      room.onMessage("score", (score) => {
         this.text = score;
         this.textWidth = this.width;
 

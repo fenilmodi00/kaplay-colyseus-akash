@@ -31,7 +31,7 @@ export class MyRoom extends Room {
       this.state[`${team}Score`] += 1;
       const pad = Math.max(this.state.leftScore, this.state.rightScore).toString().length;
 
-      this.broadcast("goal",
+      this.broadcast("score",
         `${String(this.state.leftScore).padStart(pad, "0")}:${String(this.state.rightScore).padStart(pad, "0")}`
       );
     });
@@ -61,6 +61,10 @@ export class MyRoom extends Room {
     console.log(client.sessionId, "left!");
 
     this.state.players.delete(client.sessionId);
+    this.state.leftScore = 0;
+    this.state.rightScore = 0;
+
+    this.broadcast("score", "0:0");
   }
 
   onDispose() {

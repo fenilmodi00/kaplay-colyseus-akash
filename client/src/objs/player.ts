@@ -77,7 +77,7 @@ function onLocalPlayerCreated(room: Room<MyRoomState>, playerObj: GameObj) {
   const [moveMinX, moveMaxX] = playerObj.moveMinMax.x;
   const [moveMinY, moveMaxY] = playerObj.moveMinMax.y;
 
-  room.onMessage("goal", () => {
+  room.onMessage("score", () => {
     mousePos = playerObj.startPos;
     playerObj.controllable = false
     room.send("move", mousePos);

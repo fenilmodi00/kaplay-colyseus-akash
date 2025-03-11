@@ -38,7 +38,7 @@ export default (room: Room<MyRoomState>) => ([
         room.send("puck", startPos());
       });
 
-      room.onMessage("goal", async () => {
+      room.onMessage("score", async () => {
         this.vel = k.vec2(0);
         this.collisionIgnore.push("player");
 
