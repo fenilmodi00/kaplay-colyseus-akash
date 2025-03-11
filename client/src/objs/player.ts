@@ -73,6 +73,7 @@ function onLocalPlayerCreated(room: Room<MyRoomState>, playerObj: GameObj) {
   playerObj.tag("localPlayer");
 
   let mousePos = playerObj.startPos;
+  let touchPos = playerObj.startPos;
   const [moveMinX, moveMaxX] = playerObj.moveMinMax.x;
   const [moveMinY, moveMaxY] = playerObj.moveMinMax.y;
 
@@ -84,8 +85,8 @@ function onLocalPlayerCreated(room: Room<MyRoomState>, playerObj: GameObj) {
     k.wait(1, () => playerObj.controllable = true)
   })
 
-  k.onMouseMove((_, delta) => {
-    if (!k.isCursorLocked() || !playerObj.controllable) return;
+  const move = (_: Vec2, delta: Vec2, isMouse = true) => {
+    if ((isMouse && !k.isCursorLocked()) || !playerObj.controllable) return;
 
     const { x, y } = mousePos;
     const newX = isMoveOvershot('y', x, delta, playerObj) ? x : x + delta.x;
@@ -97,6 +98,14 @@ function onLocalPlayerCreated(room: Room<MyRoomState>, playerObj: GameObj) {
     );
 
     room.send("move", mousePos);
+  }
+
+  k.onMouseMove(move);
+
+  k.onTouchStart(pos => touchPos = pos)
+  k.onTouchMove((pos) => {
+    move(pos, pos.sub(touchPos).scale(window.devicePixelRatio), false);
+    touchPos = pos
   });
 }
 
