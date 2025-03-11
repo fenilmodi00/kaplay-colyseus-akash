@@ -24,15 +24,15 @@ export default (room: Room<MyRoomState>) => ([
       this.onCollide("localPlayer", (_: GameObj, col: Collision) => {
         room.send("puck", { ...this.pos, hit: true });
         this.vel = k.vec2(0);
-        this.applyImpulse(col.normal.scale(+col.distance * 100));
-      })
+        this.applyImpulse(col.normal.scale(col.distance).scale(100));
+      });
 
       this.onCollide("boundary", () => {
         k.shake(2);
       });
 
       this.onCollide("net", async (net: GameObj) => {
-        if (room.state.lastHitBy != localPlayerId) return
+        if (room.state.lastHitBy != localPlayerId) return;
 
         room.send("goal", net.team);
         room.send("puck", startPos());
@@ -40,7 +40,7 @@ export default (room: Room<MyRoomState>) => ([
 
       room.onMessage("goal", async () => {
         this.vel = k.vec2(0);
-        this.area.collisionIgnore = [...(this.area?.collisionIgnore ?? []), "player"];
+        this.collisionIgnore.push("player");
 
         k.shake(10);
         k.flash(k.getBackground() ?? k.WHITE, 0.25);
@@ -50,7 +50,7 @@ export default (room: Room<MyRoomState>) => ([
         this.pos = startPos();
 
         k.wait(1, () => {
-          if (this.area?.collisionIgnore) this.area.collisionIgnore.splice(this.area.collisionIgnore.indexOf("player"), 1);
+          this.collisionIgnore = this.collisionIgnore.filter((c: string) => c != "player");
           k.tween(this.scale, k.vec2(1), 0.25, v => this.scale = v, k.easings.easeOutQuad);
         })
       });
