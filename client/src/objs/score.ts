@@ -11,7 +11,7 @@ export default (room: Room<MyRoomState>) => ([
         anchor: "top",
         pos: k.vec2(0, -6),
         width: this.textWidth + 30,
-        height: 50,
+        height: 54,
         radius: [0, 0, 16, 16],
         color: k.Color.fromHex("1f102a"),
         opacity: 0.8,

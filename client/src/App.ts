@@ -10,16 +10,18 @@ export const k = kaplay({
   width: GAME_WIDTH,
   height: GAME_HEIGHT,
   letterbox: true,
-  background: "8db7ff"
+  background: "8db7ff",
+  font: "happy-o",
 });
 
 // Create all scenes
 createLobbyScene();
 
 async function main() {
+  await k.loadBitmapFont("happy-o", "assets/happy-o.png", 31, 39);
 
   const text = k.add([
-    k.text("Joining room ..."),
+    k.text("Joining room ...", { size: 28 }),
     k.pos(k.center()),
     k.anchor("center")
   ]);
