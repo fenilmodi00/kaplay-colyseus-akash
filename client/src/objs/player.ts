@@ -82,7 +82,7 @@ function onLocalPlayerCreated(room: Room<MyRoomState>, playerObj: GameObj) {
     playerObj.controllable = false
     room.send("move", mousePos);
 
-    k.wait(1, () => playerObj.controllable = true)
+    k.wait(1.25, () => playerObj.controllable = true)
   })
 
   const move = (_: Vec2, delta: Vec2, isMouse = true) => {
