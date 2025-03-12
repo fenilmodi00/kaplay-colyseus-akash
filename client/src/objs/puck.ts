@@ -1,5 +1,5 @@
 import { k } from "../App"
-import { Room } from "colyseus.js";
+import { getStateCallbacks, Room } from "colyseus.js";
 import type { MyRoomState } from "../../../server/src/rooms/schema/MyRoomState";
 import type { Collision, DrawRectOpt, GameObj } from "kaplay"
 
@@ -19,6 +19,7 @@ export default (room: Room<MyRoomState>) => ([
   "puck",
   {
     add(this: GameObj) {
+      const $ = getStateCallbacks(room);
       const localPlayerId = room.sessionId;
 
       k.tween(this.scale, k.vec2(1), 0.25, v => this.scale = v, k.easings.easeOutBack);
@@ -43,6 +44,11 @@ export default (room: Room<MyRoomState>) => ([
 
         room.send("goal", net.team);
         room.send("puck", startPos());
+      });
+
+      $(room.state).listen("lastHitBy", (id) => {
+        if (id == localPlayerId) return;
+        this.vel = k.vec2(0);
       });
 
       room.onMessage("score", async () => {
