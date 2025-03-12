@@ -10,6 +10,7 @@ export const k = kaplay({
   width: GAME_WIDTH,
   height: GAME_HEIGHT,
   letterbox: true,
+  pixelDensity: Math.min(window.devicePixelRatio, 2),
   background: "8db7ff",
   font: "happy-o",
 });
