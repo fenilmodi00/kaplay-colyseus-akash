@@ -38,7 +38,7 @@ export default () => ([
         k.rect(8, 200, { radius: side == -1 ? [0, 2, 2, 0] : [2, 0, 0, 2] }),
         k.color(k.Color.fromHex("834dc4")),
         k.outline(4, k.Color.fromHex("1f102a")),
-        k.area({ collisionIgnore: ["player"] }),
+        k.area({ collisionIgnore: ["boundary", "player"] }),
         k.z(9999),
         "net",
         {
