@@ -48,7 +48,7 @@ export default (room: Room<MyRoomState>, player: Player) => ([
         y: Object.values({
           min: moveOffset.y,
           max: k.height() - moveOffset.y,
-        })
+        }),
       };
 
       if (player.sessionId == room.sessionId) onLocalPlayerCreated(room, this);
@@ -65,7 +65,7 @@ export default (room: Room<MyRoomState>, player: Player) => ([
         player.y,
         k.dt() * (this.moveMinMax.y.includes(player.y) ? this.overshootLerp : this.moveLerp)
       );
-    }
+    },
   },
 ])
 
@@ -89,8 +89,8 @@ function onLocalPlayerCreated(room: Room<MyRoomState>, playerObj: GameObj) {
     if ((isMouse && !k.isCursorLocked()) || !playerObj.controllable) return;
 
     const { x, y } = mousePos;
-    const newX = isMoveOvershot('y', x, delta, playerObj) ? x : x + delta.x;
-    const newY = isMoveOvershot('x', y, delta, playerObj) ? y : y + delta.y;
+    const newX = x + delta.x;
+    const newY = y + delta.y;
 
     mousePos = k.vec2(
       k.clamp(moveMinX, newX, moveMaxX),
@@ -107,12 +107,4 @@ function onLocalPlayerCreated(room: Room<MyRoomState>, playerObj: GameObj) {
     move(pos, pos.sub(touchPos).scale(window.devicePixelRatio), false);
     touchPos = pos
   });
-}
-
-function isMoveOvershot(axis: "x" | "y", newPos: number, delta: Vec2, playerObj: GameObj) {
-  const minMax = playerObj.moveMinMax[axis];
-
-  return minMax.includes(newPos) &&
-    !minMax.includes(playerObj.pos[axis]) &&
-    Math.abs(delta[axis]) > Math.abs(delta[axis == 'y' ? 'x' : 'y']);
 }
