@@ -6,7 +6,7 @@ export default () => ([
   k.z(0),
   {
     add(this: GameObj) {
-      const thickness = 100;
+      const thickness = 200;
       const bleed = 5;
 
       this.boundaries = [
