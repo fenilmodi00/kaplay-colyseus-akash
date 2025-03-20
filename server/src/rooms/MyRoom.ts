@@ -36,6 +36,12 @@ export class MyRoom extends Room {
       );
     });
 
+    this.onMessage("event", (client, { name, exceptLocal = false, data }: { name?: string, exceptLocal?: boolean, data?: any } = {}) => {
+      if (!name) return;
+
+      this.broadcast(`event:${name}`, data, exceptLocal && { except: client });
+    });
+
     this.onMessage("type", (client, message) => {
       //
       // handle "type" message
@@ -47,7 +53,7 @@ export class MyRoom extends Room {
     console.log(client.sessionId, "joined!");
 
     const player = new Player();
-    player.team = this.teamPlayersCount() % 2 ? "right" : "left"
+    player.team = this.teamPlayersCount() % 2 ? "right" : "left";
     player.x = player.team == "left" ? GAME_WIDTH / 4 : GAME_WIDTH - (GAME_WIDTH / 4);
     player.y = GAME_HEIGHT / 2;
     player.sessionId = client.sessionId;
