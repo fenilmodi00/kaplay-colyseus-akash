@@ -61,15 +61,19 @@ export class MyRoom extends Room {
     player.avatar = avatars[Math.floor(Math.random() * avatars.length)];
 
     this.state.players.set(client.sessionId, player);
+
+    this.state.leftScore = 0;
+    this.state.rightScore = 0;
+    this.broadcast("score", "0:0");
   }
 
   onLeave (client: Client, consented: boolean) {
     console.log(client.sessionId, "left!");
 
     this.state.players.delete(client.sessionId);
+
     this.state.leftScore = 0;
     this.state.rightScore = 0;
-
     this.broadcast("score", "0:0");
   }
 

@@ -22,7 +22,8 @@ export default (room: Room<MyRoomState>) => ([
       const $ = getStateCallbacks(room);
       const localPlayerId = room.sessionId;
 
-      k.tween(this.scale, k.vec2(1), 0.25, v => this.scale = v, k.easings.easeOutBack);
+      k.wait(room.state.puckX || room.state.puckX ? 1.25 : 0, () =>
+        k.tween(this.scale, k.vec2(1), 0.25, v => this.scale = v, k.easings.easeOutBack));
 
       this.onCollide("localPlayer", (_: GameObj, col: Collision) => {
         room.send("puck", { ...this.pos, hit: true });
@@ -58,21 +59,24 @@ export default (room: Room<MyRoomState>) => ([
       this.onCollide("net", async (net: GameObj) => {
         if (room.state.lastHitBy != localPlayerId) return;
 
-        k.addKaboom(k.vec2(k.clamp(100, this.pos.x, k.width() - 100), this.pos.y), { scale: 0.8 });
-
         room.send("goal", net.team);
         room.send("puck", startPos());
       });
 
-      room.onMessage("score", async () => {
+      room.onMessage("score", async (score) => {
         this.vel = k.vec2(0);
         this.collisionIgnore.push("player");
 
-        k.shake(10);
-        k.flash(k.getBackground() ?? k.WHITE, 0.25);
-        k.burp();
+        if (score != "0:0") {
+          k.addKaboom(k.vec2(k.clamp(100, room.state.puckX, k.width() - 100), room.state.puckY), { scale: 0.8 });
+
+          k.shake(10);
+          k.flash(k.getBackground() ?? k.WHITE, 0.25);
+          k.burp();
+        }
 
         await k.tween(this.scale, k.vec2(0), 0.25, v => this.scale = v, k.easings.easeOutQuad);
+        room.send("puck", startPos());
         this.pos = startPos();
 
         k.wait(1, () => {
