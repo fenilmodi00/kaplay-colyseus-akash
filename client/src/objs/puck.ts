@@ -1,7 +1,7 @@
-import { k } from "../App"
+import { k } from "../App";
 import { getStateCallbacks, Room } from "colyseus.js";
 import type { MyRoomState } from "../../../server/src/rooms/schema/MyRoomState";
-import type { Collision, DrawRectOpt, GameObj } from "kaplay"
+import type { Collision, DrawRectOpt, GameObj } from "kaplay";
 
 const size = 48;
 const startPos = () => (k.vec2(k.width(), k.height()).scale(0.5).sub(0, 6));
@@ -28,13 +28,31 @@ export default (room: Room<MyRoomState>) => ([
         room.send("puck", { ...this.pos, hit: true });
         this.vel = k.vec2(0);
         this.applyImpulse(col.normal.scale(col.distance).scale(100));
+        k.play("hit");
       });
 
-      this.onCollide("player", () => k.play("hit"));
+      this.onCollide("player", (obj: GameObj) => {
+        if (obj.is("localPlayer")) return;
+
+        room.send("event", { name: "hit" });
+      });
 
       this.onCollide("boundary", () => {
+        if (room.state.lastHitBy != localPlayerId) return;
+
         k.shake(2);
         k.play("hit");
+        room.send("event", { name: "hit", exceptLocal: true, data: "boundary" });
+      });
+
+      room.onMessage("event:hit", async (target) => {
+        k.play("hit");
+        if (target == "boundary") k.shake(2);
+      });
+
+      $(room.state).listen("lastHitBy", (id) => {
+        if (id == localPlayerId) return;
+        this.vel = k.vec2(0);
       });
 
       this.onCollide("net", async (net: GameObj) => {
@@ -44,11 +62,6 @@ export default (room: Room<MyRoomState>) => ([
 
         room.send("goal", net.team);
         room.send("puck", startPos());
-      });
-
-      $(room.state).listen("lastHitBy", (id) => {
-        if (id == localPlayerId) return;
-        this.vel = k.vec2(0);
       });
 
       room.onMessage("score", async () => {
@@ -89,12 +102,14 @@ export default (room: Room<MyRoomState>) => ([
         color: k.Color.fromHex("4a3052"),
         outline: {
           width: 4,
-          color: k.Color.fromHex("1f102a")
+          color: k.Color.fromHex("1f102a"),
         },
         radius: [8, 8, size, size],
       };
 
+      // Raytracing :)
       k.drawRect({ ...side, pos: side.pos?.scale(2), opacity: 0.2 });
+
       k.drawRect(side);
 
       k.drawEllipse({
@@ -107,6 +122,6 @@ export default (room: Room<MyRoomState>) => ([
           color: k.Color.fromHex("1f102a"),
         },
       });
-    }
+    },
   },
 ])
