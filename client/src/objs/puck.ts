@@ -4,7 +4,7 @@ import type { MyRoomState } from "../../../server/src/rooms/schema/MyRoomState";
 import type { Collision, DrawRectOpt, GameObj } from "kaplay";
 
 const size = 48;
-const startPos = () => (k.vec2(k.width(), k.height()).scale(0.5).sub(0, 6));
+const startPos = () => (k.center().sub(0, 6));
 
 export default (room: Room<MyRoomState>) => ([
   k.pos(startPos()),

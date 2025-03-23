@@ -39,7 +39,6 @@ export default () => ([
         k.color(k.Color.fromHex("834dc4")),
         k.outline(4, k.Color.fromHex("1f102a")),
         k.area({ collisionIgnore: ["boundary", "player"] }),
-        k.z(9999),
         "net",
         {
           team: side == -1 ? "left" : "right",

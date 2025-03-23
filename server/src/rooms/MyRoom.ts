@@ -36,10 +36,8 @@ export class MyRoom extends Room {
       );
     });
 
-    this.onMessage("event", (client, { name, exceptLocal = false, data }: { name?: string, exceptLocal?: boolean, data?: any } = {}) => {
-      if (!name) return;
-
-      this.broadcast(`event:${name}`, data, exceptLocal && { except: client });
+    this.onMessage("event", (client, { name, exceptLocal, data }: { name?: string; exceptLocal?: boolean; data?: any } = {}) => {
+      this.broadcast(name ? `event:${name}` : "event", data, exceptLocal && { except: client });
     });
 
     this.onMessage("type", (client, message) => {
