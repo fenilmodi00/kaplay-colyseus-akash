@@ -1,5 +1,5 @@
 import { k } from "../App";
-import { getStateCallbacks, Room } from "colyseus.js";
+import { Room } from "colyseus.js";
 import type { MyRoomState } from "../../../server/src/rooms/schema/MyRoomState";
 import type { GameObj } from "kaplay";
 
@@ -26,19 +26,18 @@ export default (room: Room<MyRoomState>) => ([
   k.animate(),
   {
     add(this: GameObj) {
-      this.textWidth = this.width
+      this.textWidth = this.width;
 
       room.onMessage("score", (score) => {
         this.text = score;
         this.textWidth = this.width;
 
-        this.animation.seek(0)
+        this.animation.seek(0);
         this.animate("scale", [k.vec2(1), k.vec2(0.75, 1.05), k.vec2(1.2), k.vec2(1)], {
           duration: 0.2,
           loops: 1,
-          // easing: k.easings.easeOutBack
         });
       });
     },
-  }
+  },
 ]);

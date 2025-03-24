@@ -31,7 +31,7 @@ export function createLobbyScene() {
 
     k.onClick(() => {
       k.setCursorLocked(true);
-    })
+    });
   })
 }
 

@@ -67,7 +67,7 @@ export default (room: Room<MyRoomState>, player: Player) => ([
       );
     },
   },
-])
+]);
 
 function onLocalPlayerCreated(room: Room<MyRoomState>, playerObj: GameObj) {
   playerObj.tag("localPlayer");
@@ -79,11 +79,11 @@ function onLocalPlayerCreated(room: Room<MyRoomState>, playerObj: GameObj) {
 
   room.onMessage("score", () => {
     mousePos = playerObj.startPos;
-    playerObj.controllable = false
+    playerObj.controllable = false;
     room.send("move", mousePos);
 
-    k.wait(1.25, () => playerObj.controllable = true)
-  })
+    k.wait(1.25, () => playerObj.controllable = true);
+  });
 
   const move = (_: Vec2, delta: Vec2, isMouse = true) => {
     if ((isMouse && !k.isCursorLocked()) || !playerObj.controllable) return;
@@ -105,6 +105,6 @@ function onLocalPlayerCreated(room: Room<MyRoomState>, playerObj: GameObj) {
   k.onTouchStart(pos => touchPos = pos)
   k.onTouchMove((pos) => {
     move(pos, pos.sub(touchPos).scale(window.devicePixelRatio), false);
-    touchPos = pos
+    touchPos = pos;
   });
 }

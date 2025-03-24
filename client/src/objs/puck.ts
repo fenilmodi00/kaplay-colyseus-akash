@@ -82,7 +82,7 @@ export default (room: Room<MyRoomState>) => ([
         k.wait(1, () => {
           this.collisionIgnore = this.collisionIgnore.filter((c: string) => c != "player");
           k.tween(this.scale, k.vec2(1), 0.25, v => this.scale = v, k.easings.easeOutQuad);
-        })
+        });
       });
 
       this.onUpdate(() => {
@@ -128,4 +128,4 @@ export default (room: Room<MyRoomState>) => ([
       });
     },
   },
-])
+]);

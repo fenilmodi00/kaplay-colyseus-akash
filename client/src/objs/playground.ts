@@ -42,7 +42,7 @@ export default () => ([
         "net",
         {
           team: side == -1 ? "left" : "right",
-        }
+        },
       ]));
 
       field.onDraw(() => {
@@ -78,7 +78,7 @@ export default () => ([
             outline: {
               width: 4,
               color: k.Color.fromHex("d6e5ff"),
-            }
+            },
           });
 
           nets.forEach(net => {
@@ -90,8 +90,8 @@ export default () => ([
               outline: {
                 width: 4,
                 color: k.Color.fromHex("c9ddff"),
-              }
-            })
+              },
+            });
           });
 
           // reflections
@@ -111,8 +111,8 @@ export default () => ([
             height: field.height - 10,
             radius: +(field?.radius ?? 100) - 10,
           });
-        })
-      })
-    }
-  }
-])
+        });
+      });
+    },
+  },
+]);
