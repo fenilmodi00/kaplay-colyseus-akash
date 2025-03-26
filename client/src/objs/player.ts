@@ -27,7 +27,7 @@ export default (room: Room<MyRoomState>, player: Player) => ([
       this.add([
         k.anchor("center"),
         k.sprite(player.avatar, { flipX: this.flipX, flipY: true }),
-        k.pos(0, k.getSprite(player.avatar)?.data?.height ?? this.height),
+        k.pos(0, this.height),
         k.opacity(0.2),
       ]);
 

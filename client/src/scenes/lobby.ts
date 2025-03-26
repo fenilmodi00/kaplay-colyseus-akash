@@ -37,5 +37,6 @@ export function createLobbyScene() {
 
 async function createPlayer(room: Room<MyRoomState>, playerState: Player) {
   await k.loadSprite(playerState.avatar, `assets/${playerState.avatar}.png`);
+  await k.getSprite(playerState.avatar);
   return k.add(player(room, playerState));
 }
