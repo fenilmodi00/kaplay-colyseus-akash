@@ -3,7 +3,7 @@ import { MyRoomState, Player } from "./schema/MyRoomState";
 import { GAME_WIDTH, GAME_HEIGHT } from "../../../globals";
 
 // list of avatars
-const avatars = ['dino', 'bean', 'bag', 'btfly', 'bobo', 'ghostiny', 'ghosty', 'mark'];
+const avatars = ['glady', 'dino', 'bean', 'bag', 'btfly', 'bobo', 'ghostiny', 'ghosty', 'mark'];
 
 export class MyRoom extends Room {
   maxClients = 2;
