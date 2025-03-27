@@ -10,10 +10,10 @@ export default () => ([
       const bleed = 5;
 
       this.boundaries = [
-        { x: bleed, y: bleed - thickness, w: k.width() - bleed * 2, h: thickness },
-        { x: bleed, y: k.height() - bleed, w: k.width() - bleed * 2, h: thickness },
-        { x: bleed - thickness, y: bleed, w: thickness, h: k.height() - bleed * 2 },
-        { x: k.width() - bleed, y: bleed, w: thickness, h: k.height() - bleed * 2 },
+        { x: -thickness, y: -thickness, w: k.width() + thickness * 2, h: thickness + bleed },
+        { x: -thickness, y: k.height() - bleed, w: k.width() + thickness * 2, h: thickness + bleed },
+        { x: -thickness, y: -thickness, w: thickness + bleed, h: k.height() + thickness * 2 },
+        { x: k.width() - bleed, y: -thickness, w: thickness + bleed, h: k.height() + thickness * 2 },
       ].map(({ x, y, w, h }) => {
           this.add([
             k.pos(x, y),
