@@ -1,6 +1,6 @@
 import { k } from "../App";
 import { getStateCallbacks, Room } from "colyseus.js";
-import type { MyRoomState } from "../../../server/src/rooms/schema/MyRoomState";
+import type { MyRoomState } from "../types/schema";
 import type { Collision, DrawRectOpt, GameObj } from "kaplay";
 
 const size = 48;
@@ -19,7 +19,7 @@ export default (room: Room<MyRoomState>) => ([
   "puck",
   {
     add(this: GameObj) {
-      const $ = getStateCallbacks(room);
+      const $ = getStateCallbacks(room as any);
       const localPlayerId = room.sessionId;
 
       k.wait(room.state.puckX || room.state.puckX ? 1.25 : 0, () =>
@@ -51,7 +51,7 @@ export default (room: Room<MyRoomState>) => ([
         if (target == "boundary") k.shake(2);
       });
 
-      $(room.state).listen("lastHitBy", (id) => {
+      $(room.state as any).listen("lastHitBy", (id: string) => {
         if (id == localPlayerId) return;
         this.vel = k.vec2(0);
       });

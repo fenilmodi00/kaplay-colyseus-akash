@@ -1,0 +1,42 @@
+# Git
+.git
+.gitignore
+
+# Documentation
+README.md
+*.md
+docs/
+
+# IDE
+.vscode/
+.idea/
+*.swp
+*.swo
+
+# OS
+.DS_Store
+Thumbs.db
+
+# Logs
+*.log
+logs/
+
+# Docker
+Dockerfile*
+docker-compose*
+.dockerignore
+
+# Environment files (these should be mounted as volumes)
+.env*
+
+# Build artifacts
+dist/
+build/
+coverage/
+
+# Dependencies (will be installed in container)
+node_modules/
+
+# Temporary files
+tmp/
+temp/

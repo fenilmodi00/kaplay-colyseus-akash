@@ -1,6 +1,6 @@
 import { k } from "../App";
 import { Room } from "colyseus.js";
-import type { MyRoomState } from "../../../server/src/rooms/schema/MyRoomState";
+import type { MyRoomState } from "../types/schema";
 import type { GameObj } from "kaplay";
 
 export default (room: Room<MyRoomState>) => ([

@@ -1,5 +1,5 @@
 import type { GameObj, Vec2 } from "kaplay";
-import type { MyRoomState, Player } from "../../../server/src/rooms/schema/MyRoomState";
+import type { MyRoomState, Player } from "../types/schema";
 import { k } from "../App";
 import { Room } from "colyseus.js";
 

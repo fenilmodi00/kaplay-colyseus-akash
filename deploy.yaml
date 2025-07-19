@@ -1,0 +1,75 @@
+---
+version: "2.0"
+
+services:
+  server:
+    image: fenildocker/kaplay-colyseus-server:latest
+    env:
+      - NODE_ENV=production
+      - PORT=2567
+      - CORS_ORIGIN=*
+      - MONITOR_PASSWORD=akash_secure_password_2024
+    expose:
+      - port: 2567
+        as: 2567
+        proto: tcp
+        to:
+          - global: true
+          - service: client
+
+  client:
+    image: fenildocker/kaplay-colyseus-client:latest
+    env:
+      - SERVER_URL=http://server:2567
+      - AKASH_DEPLOYMENT=true
+    expose:
+      - port: 80
+        as: 80
+        proto: tcp
+        to:
+          - global: true
+    depends_on:
+      - server
+
+profiles:
+  compute:
+    server:
+      resources:
+        cpu:
+          units: 1.0
+        memory:
+          size: 1Gi
+        storage:
+          - size: 1Gi
+    client:
+      resources:
+        cpu:
+          units: 0.5
+        memory:
+          size: 512Mi
+
+  placement:
+    dcloud:
+      attributes:
+        host: akash
+      signedBy:
+        anyOf:
+          - "akash1365yvmc4s7awdyj3n2sav7xfx76adc6dnmlx63"
+          - "akash18qa2a2ltfyvkyj0ggj3hkvuj6twzyumuaru9s4"
+      pricing:
+        server:
+          denom: uakt
+          amount: 1000
+        client:
+          denom: uakt
+          amount: 500
+
+deployment:
+  server:
+    dcloud:
+      profile: server
+      count: 1
+  client:
+    dcloud:
+      profile: client
+      count: 1

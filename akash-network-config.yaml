@@ -1,0 +1,119 @@
+# Akash Network Configuration for KAPLAY Colyseus Game
+# This file contains networking and ingress configurations for proper service discovery
+
+---
+# Network Configuration Template
+# Replace placeholders with actual deployment URLs after deployment
+
+network:
+  # Server service configuration
+  server:
+    internal_port: 2567
+    external_port: 2567
+    protocol: tcp
+    # Supports both HTTP and WebSocket connections
+    websocket_enabled: true
+    
+  # Client service configuration  
+  client:
+    internal_port: 80
+    external_port: 80
+    protocol: tcp
+    
+# Ingress Rules for Public Access
+ingress:
+  # Server ingress - handles both HTTP and WebSocket traffic
+  server:
+    enabled: true
+    global: true
+    # Custom domain configuration (optional)
+    # hosts:
+    #   - game-server.yourdomain.com
+    paths:
+      - path: /
+        pathType: Prefix
+      - path: /colyseus
+        pathType: Prefix
+      - path: /health
+        pathType: Exact
+      - path: /hello_world
+        pathType: Exact
+    # WebSocket upgrade support
+    annotations:
+      nginx.ingress.kubernetes.io/proxy-read-timeout: "3600"
+      nginx.ingress.kubernetes.io/proxy-send-timeout: "3600"
+      nginx.ingress.kubernetes.io/websocket-services: "server"
+      
+  # Client ingress - serves static files
+  client:
+    enabled: true
+    global: true
+    # Custom domain configuration (optional)
+    # hosts:
+    #   - game-client.yourdomain.com
+    paths:
+      - path: /
+        pathType: Prefix
+    # SPA routing support
+    annotations:
+      nginx.ingress.kubernetes.io/rewrite-target: /index.html
+
+# Service Discovery Configuration
+service_discovery:
+  # How client discovers server endpoint
+  client_to_server:
+    method: "environment_variable"
+    # Server URL will be injected via VITE_SERVER_URL environment variable
+    # Format: https://<akash-assigned-url>
+    
+  # Health check endpoints for monitoring
+  health_checks:
+    server:
+      path: "/health"
+      interval: 30s
+      timeout: 5s
+      retries: 3
+    client:
+      path: "/"
+      interval: 30s
+      timeout: 5s
+      retries: 3
+
+# CORS Configuration for Cross-Origin Requests
+cors:
+  server:
+    # Allow all origins in production (can be restricted to specific domains)
+    allowed_origins: "*"
+    allowed_methods: ["GET", "POST", "PUT", "DELETE", "OPTIONS"]
+    allowed_headers: ["Content-Type", "Authorization", "X-Requested-With"]
+    credentials: true
+    
+# Load Balancing Configuration (for HA deployment)
+load_balancing:
+  server:
+    strategy: "round_robin"
+    session_affinity: true  # Important for WebSocket connections
+    health_check: "/health"
+  client:
+    strategy: "round_robin"
+    session_affinity: false
+    health_check: "/"
+
+# Security Configuration
+security:
+  # Rate limiting
+  rate_limiting:
+    enabled: true
+    requests_per_minute: 100
+    burst: 20
+    
+  # DDoS protection
+  ddos_protection:
+    enabled: true
+    max_connections_per_ip: 10
+    
+  # SSL/TLS configuration
+  tls:
+    enabled: true
+    redirect_http_to_https: true
+    # Certificate will be managed by Akash provider
