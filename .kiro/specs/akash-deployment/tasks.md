@@ -44,16 +44,12 @@
 
 - [x] 7. Add monitoring and logging capabilities
 
-
   - Implement structured logging in both client and server containers
   - Add health check endpoints for service monitoring
   - Configure error handling and logging for production deployment
   - _Requirements: 5.1, 5.2, 5.3_
 
 - [ ] 8. Create deployment scripts and documentation
-
-
-
 
   - Write shell scripts for building and pushing Docker images
   - Create deployment documentation with step-by-step Akash deployment guide
